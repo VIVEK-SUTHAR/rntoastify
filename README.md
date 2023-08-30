@@ -38,6 +38,8 @@ const toast = useToast();
 toast.success('Hooray,Toast is being displayed :)');
 ```
 
+## Toast Config
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
