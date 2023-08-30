@@ -9,7 +9,7 @@ export enum ToastType {
 }
 
 interface ToastInternalContextType {
-  success: (message: string) => void;
+  success: (message: string, desc?: string) => void;
   error: (message: string) => void;
   info: (message: string) => void;
 }
@@ -22,19 +22,13 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { setToastState, toastState } = useToastProvider();
-  const success = (message: string) => {
+  const success = (message: string, desc?: string) => {
     Logger.Success('[Internal Context]:[Success Toast]:Message', message);
-    setToastState({
-      desc: '',
-      isVisible: true,
-      title: 'dsd',
-      type: ToastType.ERROR,
-    });
     if (toastState.isVisible) {
       setToastState({
         isVisible: true,
         title: message,
-        desc: '',
+        desc: desc ? desc : '',
         type: ToastType.SUCCESS,
       });
       return;
@@ -42,7 +36,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
     setToastState({
       isVisible: true,
       title: message,
-      desc: '',
+      desc: desc ? desc : '',
       type: ToastType.SUCCESS,
     });
     hideToast();

@@ -222,7 +222,13 @@ const Toast: React.FC<ToastProps> = (props) => {
         <TwitterVarient />
       </Case>
       <Case condition={ToastVarient === 'discord'}>
-        <DiscordVarient />
+        <DiscordVarient
+          discordToastContainerStyle={
+            props.varient === 'discord'
+              ? props.discordToastContainerStyle
+              : undefined
+          }
+        />
       </Case>
     </Switch>
   );

@@ -8,8 +8,8 @@ export default function App() {
         <Toast
           config={{
             animationType: 'slideIn',
-            icon: { show: true },
           }}
+          varient="discord"
         />
         <Example />
       </View>
@@ -25,7 +25,10 @@ const Example = () => {
         <Button
           title="Show Success toast"
           onPress={() => {
-            toast.success('Hello This is sample toast');
+            toast.success(
+              'Hello This is sample toast',
+              'Welcome to RNN Toastify'
+            );
           }}
         />
       </View>
