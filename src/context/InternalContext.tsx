@@ -1,7 +1,11 @@
 import React, { createContext, ReactNode, useContext } from 'react';
 import { DefaultTimeOut } from '../constants';
 import Logger from '../utils/Logger';
-import { useToastProvider } from './ToastContext';
+import {
+  defaultToastState,
+  ToastVarient,
+  useToastProvider,
+} from './ToastContext';
 export enum ToastType {
   SUCCESS = 'success',
   ERROR = 'error',
@@ -12,6 +16,8 @@ interface ToastInternalContextType {
   success: (message: string, desc?: string) => void;
   error: (message: string) => void;
   info: (message: string) => void;
+  twitter: (title: string, desc?: string) => void;
+  discord: (title: string, desc?: string) => void;
 }
 
 const ToastContext = createContext<ToastInternalContextType | undefined>(
@@ -30,6 +36,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
         title: message,
         desc: desc ? desc : '',
         type: ToastType.SUCCESS,
+        varient: ToastVarient.Default,
       });
       return;
     }
@@ -38,6 +45,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
       title: message,
       desc: desc ? desc : '',
       type: ToastType.SUCCESS,
+      varient: ToastVarient.Default,
     });
     hideToast();
   };
@@ -48,6 +56,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
         title: message,
         desc: '',
         type: ToastType.ERROR,
+        varient: ToastVarient.Default,
       });
       return;
     }
@@ -56,6 +65,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
       title: message,
       desc: '',
       type: ToastType.ERROR,
+      varient: ToastVarient.Default,
     });
     hideToast();
   };
@@ -66,6 +76,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
         title: message,
         desc: '',
         type: ToastType.INFO,
+        varient: ToastVarient.Default,
       });
       return;
     }
@@ -74,24 +85,52 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
       title: message,
       desc: '',
       type: ToastType.INFO,
+      varient: ToastVarient.Default,
     });
     hideToast();
   };
-
+  const twitter = (message: string, desc?: string) => {
+    const toastConfig = {
+      isVisible: true,
+      title: message,
+      desc: desc ? desc : '',
+      type: ToastType.INFO,
+      varient: ToastVarient.Twitter,
+    };
+    if (toastState.isVisible) {
+      setToastState(toastConfig);
+      return;
+    }
+    setToastState(toastConfig);
+    hideToast();
+  };
+  const discord = (message: string, desc?: string) => {
+    const toastConfig = {
+      isVisible: true,
+      title: message,
+      desc: desc ? desc : '',
+      type: ToastType.INFO,
+      varient: ToastVarient.Discord,
+    };
+    if (toastState.isVisible) {
+      setToastState(toastConfig);
+      return;
+    }
+    setToastState(toastConfig);
+    hideToast();
+  };
   const hideToast = React.useCallback(() => {
     setTimeout(() => {
-      setToastState({
-        isVisible: false,
-        title: '',
-        desc: '',
-        type: ToastType.INFO,
-      });
+      setToastState(defaultToastState);
     }, DefaultTimeOut);
   }, [setToastState]);
+
   const contextValue: ToastInternalContextType = {
     error,
     info,
     success,
+    twitter,
+    discord,
   };
   return (
     <ToastContext.Provider value={contextValue}>

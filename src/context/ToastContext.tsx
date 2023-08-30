@@ -6,6 +6,11 @@ export enum ToastType {
   INFO = 'info',
 }
 
+export enum ToastVarient {
+  Default = 'default',
+  Twitter = 'twitter',
+  Discord = 'discord',
+}
 export interface ToastProps {
   isVisible: boolean;
   message: string;
@@ -17,6 +22,7 @@ type ToastState = {
   title: string;
   type: ToastType;
   desc?: string;
+  varient?: ToastVarient;
 };
 interface ToastContextType {
   toastState: ToastState;
@@ -26,21 +32,25 @@ interface ToastContextType {
       title: string;
       desc: string;
       type: ToastType;
+      varient: ToastVarient;
     }>
   >;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+export const defaultToastState = {
+  isVisible: false,
+  title: '',
+  desc: '',
+  varient: ToastVarient.Default,
+  type: ToastType.INFO,
+};
+
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [toastState, setToastState] = React.useState({
-    isVisible: false,
-    title: '',
-    desc: '',
-    type: ToastType.INFO,
-  });
+  const [toastState, setToastState] = React.useState(defaultToastState);
 
   const contextValue: ToastContextType = {
     toastState,

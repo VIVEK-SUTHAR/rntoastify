@@ -62,7 +62,7 @@ const ReverseProgressBar = forwardRef<
 
 const styles = StyleSheet.create({
   progressBarContainer: {
-    height: 6,
+    height: 4,
     width: '100%',
     backgroundColor: 'transparent',
     overflow: 'hidden',

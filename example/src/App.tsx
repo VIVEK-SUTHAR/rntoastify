@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { Toast, ToastProvider, useToast } from 'rn-toastify';
 export default function App() {
   return (
@@ -7,15 +7,20 @@ export default function App() {
       <View style={styles.container}>
         <Toast
           config={{
-            animationType: 'slideIn',
+            animationType: 'spring',
           }}
-          varient="discord"
         />
         <Example />
+        <Test />
       </View>
     </ToastProvider>
   );
 }
+
+const Test = () => {
+  console.log('Rerender');
+  return <Text>Hello</Text>;
+};
 
 const Example = () => {
   const toast = useToast();
@@ -45,6 +50,25 @@ const Example = () => {
           title="Show INfo Toast"
           onPress={() => {
             toast.info('Hello This is Info toast');
+          }}
+        />
+      </View>
+      <View style={styles.my4}>
+        <Button
+          title="Show Twitter Toast"
+          onPress={() => {
+            toast.twitter(
+              'Hello This is Twitter Varient Toast',
+              'Here Goes Subtitle'
+            );
+          }}
+        />
+      </View>
+      <View style={styles.my4}>
+        <Button
+          title="Show Discord Varint Toast"
+          onPress={() => {
+            toast.discord('Hello This is Discord Toast', 'I am subtitle');
           }}
         />
       </View>

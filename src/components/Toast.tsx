@@ -13,6 +13,7 @@ import { STATUSBAR_HEIGHT } from '../constants';
 import { ToastType, useToastProvider } from '../context/ToastContext';
 import Logger from '../utils/Logger';
 import { Case, Switch } from './ConditionalUI';
+import { ToastVarient } from '../context/ToastContext';
 import DiscordVarient, {
   type DiscordToastProps,
 } from './varients/DiscordVarient';
@@ -77,9 +78,12 @@ const Toast: React.FC<ToastProps> = (props) => {
     animationType = 'slideIn',
     icon = { show: false, color: 'black', height: 18, width: 18 },
   } = props.config || {};
-  const ToastVarient = props.varient || 'default';
-
   const toast = useToastProvider();
+
+  const _ToastVarient = React.useMemo(
+    () => toast.toastState.varient,
+    [toast.toastState.varient]
+  );
 
   const toastOffSet = React.useMemo(
     () => (position === 'bottom' ? 450 : -100),
@@ -210,7 +214,7 @@ const Toast: React.FC<ToastProps> = (props) => {
 
   return (
     <Switch>
-      <Case condition={ToastVarient === 'default'}>
+      <Case condition={_ToastVarient === ToastVarient.Default}>
         <Animated.View style={[style, TOAST_POSITIONS[position]]}>
           {icon.show && (
             <View style={styles.iconWrapper}>{getToastIcon()}</View>
@@ -218,10 +222,10 @@ const Toast: React.FC<ToastProps> = (props) => {
           <Text>{toast.toastState.title}</Text>
         </Animated.View>
       </Case>
-      <Case condition={ToastVarient === 'twitter'}>
+      <Case condition={_ToastVarient === ToastVarient.Twitter}>
         <TwitterVarient />
       </Case>
-      <Case condition={ToastVarient === 'discord'}>
+      <Case condition={_ToastVarient === ToastVarient.Discord}>
         <DiscordVarient
           discordToastContainerStyle={
             props.varient === 'discord'

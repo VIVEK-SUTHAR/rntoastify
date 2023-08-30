@@ -21,7 +21,7 @@ export type TwiterToastProps = {
 };
 const TwitterToastVarient = () => {
   const toast = useToastProvider();
-  const slideIn = useRef(new Animated.Value(-10)).current;
+  const slideIn = useRef(new Animated.Value(-150)).current;
 
   const showToast = React.useCallback(() => {
     Animated.timing(slideIn, {
@@ -62,8 +62,7 @@ const TwitterToastVarient = () => {
       </View>
       <View style={styles.flex1}>
         <Text style={styles.twitterToastTitle}>{toast.toastState.title}</Text>
-        {/* Hot off the keyboardm just punblished the new blog on React Native */}
-        {/* </Text> */}
+        <Text style={styles.twitterToastSubTitle}>{toast.toastState.desc}</Text>
       </View>
     </Animated.View>
   );
@@ -94,12 +93,12 @@ const styles = StyleSheet.create({
   twitterToastTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: 'white',
+    color: 'black',
   },
   twitterToastSubTitle: {
     fontSize: 14,
     fontWeight: '400',
-    color: 'gray',
+    color: 'black',
   },
   flex1: {
     flex: 1,
