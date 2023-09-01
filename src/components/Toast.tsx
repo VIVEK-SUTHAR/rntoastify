@@ -9,7 +9,7 @@ import { Animated, StyleSheet, Text, View } from 'react-native';
 import ErrorIcon from '../assets/icons/Error';
 import Info from '../assets/icons/Info';
 import SuccessIcon from '../assets/icons/Success';
-import { STATUSBAR_HEIGHT } from '../constants';
+import { DefaultTimeOut, STATUSBAR_HEIGHT } from '../constants';
 import { ToastType, useToastProvider } from '../context/ToastContext';
 import Logger from '../utils/Logger';
 import { Case, Switch } from './ConditionalUI';
@@ -71,16 +71,19 @@ export type ToastProps = {
 } & (TwiterToastProps | DiscordToastProps | DefaultToastProps);
 
 const Toast: React.FC<ToastProps> = (props) => {
+  const toast = useToastProvider();
   const {
     errorColor = COLORS.ERROR,
     successColor = COLORS.SUCCESS,
     infoColor = COLORS.INFO,
-    position = 'top',
-    animationType = 'slideIn',
+    // position = toast.toastState.extra?.position ?? 'top',
+    animationType = 'spring',
     icon = { show: false, color: 'black', height: 18, width: 18 },
   } = props.config || {};
-  const toast = useToastProvider();
 
+  const position = React.useMemo(() => {
+    return toast.toastState.extra?.position ?? 'top';
+  }, [toast.toastState.extra?.position]);
   const _ToastVarient = React.useMemo(
     () => toast.toastState.variant,
     [toast.toastState.variant]
@@ -92,7 +95,9 @@ const Toast: React.FC<ToastProps> = (props) => {
   );
   Logger.Warn(`TOast Offset FOR ${position} is ${toastOffSet}`);
 
-  const slideIn = useRef(new Animated.Value(toastOffSet)).current;
+  const slideInBottom = useRef(new Animated.Value(450)).current;
+  const slideInTop = useRef(new Animated.Value(-100)).current;
+
   const scaleRef = useRef(new Animated.Value(0.1)).current;
 
   const backgroundMap = {
@@ -105,57 +110,62 @@ const Toast: React.FC<ToastProps> = (props) => {
     backgroundMap[toast.toastState.type] || COLORS.DEFAULT;
 
   const showToast = React.useCallback(() => {
-    if (animationType === 'spring') {
-      const scaleAnim = Animated.spring(scaleRef, {
-        toValue: 1,
-        useNativeDriver: true,
-        damping: 14,
-      });
-      const slideInAnim = Animated.spring(slideIn, {
-        toValue: position === 'bottom' ? 25 : 10,
-        useNativeDriver: true,
-        damping: 10,
-      });
-      Animated.parallel([slideInAnim, scaleAnim]).start();
-      return;
+    if (position === 'bottom') {
+      if (animationType === 'slideIn') {
+        Animated.timing(slideInBottom, {
+          toValue: 450,
+          useNativeDriver: true,
+          duration: DefaultTimeOut,
+        }).start();
+      } else if (animationType === 'spring') {
+        const scaleAnim = Animated.spring(scaleRef, {
+          toValue: 1,
+          useNativeDriver: true,
+          damping: 14,
+        });
+        const slideInAnim = Animated.spring(slideInBottom, {
+          toValue: 25,
+          useNativeDriver: true,
+          damping: 10,
+        });
+        Animated.parallel([slideInAnim, scaleAnim]).start();
+      }
+    } else if (position === 'top') {
+      if (animationType === 'slideIn') {
+        Animated.timing(slideInTop, {
+          toValue: 10,
+          useNativeDriver: true,
+        }).start();
+      } else if (animationType === 'spring') {
+        const scaleAnim = Animated.spring(scaleRef, {
+          toValue: 1,
+          useNativeDriver: true,
+          damping: 14,
+        });
+        const slideInAnim = Animated.spring(slideInTop, {
+          toValue: 10,
+          useNativeDriver: true,
+          damping: 10,
+        });
+        Animated.parallel([slideInAnim, scaleAnim]).start();
+        return;
+      }
     }
-    const slideInAnim = Animated.timing(slideIn, {
-      toValue: position === 'bottom' ? 25 : 10,
-      useNativeDriver: true,
-    });
-    slideInAnim.start();
-  }, [animationType, position, scaleRef, slideIn]);
+  }, [position, slideInBottom, scaleRef, animationType, slideInTop]);
 
   const hideToast = React.useCallback(() => {
-    if (animationType === 'spring') {
-      const hideScale = Animated.spring(scaleRef, {
-        toValue: 0.1,
-        useNativeDriver: true,
-        damping: 10,
-      });
-      const hideViaSlide = Animated.spring(slideIn, {
-        toValue: toastOffSet,
-        useNativeDriver: true,
-        damping: 10,
-      });
-      Animated.parallel([hideScale, hideViaSlide]).start();
-      return;
-    }
-    const hideViaSlide = Animated.timing(slideIn, {
-      toValue: toastOffSet,
-      useNativeDriver: true,
-    });
-    hideViaSlide.start();
-  }, [animationType, scaleRef, slideIn, toastOffSet]);
+    scaleRef.setValue(0.1);
+    slideInBottom.setValue(450);
+    slideInTop.setValue(-100);
+  }, [scaleRef, slideInBottom, slideInTop]);
 
   useEffect(() => {
-    Logger.Log('Toast State', toast.toastState);
     if (toast.toastState.isVisible) {
       showToast();
     } else {
       hideToast();
     }
-  }, [hideToast, showToast, slideIn, toast.toastState, toast.setToastState]);
+  }, [hideToast, showToast, toast.toastState.isVisible]);
 
   const dynamicStyleSheet: StyleProp<ViewStyle> = React.useMemo(() => {
     return {
@@ -163,7 +173,10 @@ const Toast: React.FC<ToastProps> = (props) => {
       display: toast.toastState.isVisible ? 'flex' : 'none',
       transform: [
         {
-          translateY: slideIn,
+          translateY:
+            toast.toastState.extra?.position === 'bottom'
+              ? slideInBottom
+              : slideInTop,
         },
         {
           scale: animationType === 'slideIn' ? 1 : scaleRef,
@@ -174,7 +187,9 @@ const Toast: React.FC<ToastProps> = (props) => {
     animationType,
     getToastBackGroundColor,
     scaleRef,
-    slideIn,
+    slideInBottom,
+    slideInTop,
+    toast.toastState.extra?.position,
     toast.toastState.isVisible,
   ]);
 

@@ -7,8 +7,8 @@ export default function App() {
       <View style={styles.container}>
         <Toast
           config={{
-            animationType: 'spring',
             position: 'top',
+            animationType: 'spring',
             icon: {
               show: true,
             },
@@ -42,7 +42,7 @@ const Example = () => {
         <Button
           title="Show Error"
           onPress={() => {
-            toast.error('Hello This is Error toast');
+            toast.error('Hello This is Error toast', { position: 'bottom' });
           }}
         />
       </View>

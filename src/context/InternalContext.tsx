@@ -30,7 +30,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { setToastState, toastState } = useToastProvider();
   const success = (message: string, options?: ExtraOptions) => {
-    Logger.Success('[Internal Context]:[Success Toast]:Message', message);
+    Logger.Success('[Internal Context]:[Success Toast]:Message', options);
     if (toastState.isVisible) {
       setToastState({
         isVisible: true,
