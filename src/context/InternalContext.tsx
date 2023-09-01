@@ -3,6 +3,7 @@ import { DefaultTimeOut } from '../constants';
 import Logger from '../utils/Logger';
 import {
   defaultToastState,
+  ExtraOptions,
   ToastVarient,
   useToastProvider,
 } from './ToastContext';
@@ -13,11 +14,11 @@ export enum ToastType {
 }
 
 interface ToastInternalContextType {
-  success: (message: string, desc?: string) => void;
-  error: (message: string) => void;
-  info: (message: string) => void;
-  twitter: (title: string, desc?: string) => void;
-  discord: (title: string, desc?: string) => void;
+  success: (message: string, options?: ExtraOptions) => void;
+  error: (message: string, options?: ExtraOptions) => void;
+  info: (message: string, options?: ExtraOptions) => void;
+  twitter: (title: string, desc?: string, type?: ToastType) => void;
+  discord: (title: string, desc?: string, type?: ToastType) => void;
 }
 
 const ToastContext = createContext<ToastInternalContextType | undefined>(
@@ -28,24 +29,32 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { setToastState, toastState } = useToastProvider();
-  const success = (message: string, desc?: string) => {
+  const success = (message: string, options?: ExtraOptions) => {
     Logger.Success('[Internal Context]:[Success Toast]:Message', message);
     if (toastState.isVisible) {
       setToastState({
         isVisible: true,
         title: message,
-        desc: desc ? desc : '',
+        desc: '',
         type: ToastType.SUCCESS,
-        varient: ToastVarient.Default,
+        variant: ToastVarient.Default,
+        extra: {
+          animation: options?.animation || 'slideIn',
+          position: options?.position || 'top',
+        },
       });
       return;
     }
     setToastState({
       isVisible: true,
       title: message,
-      desc: desc ? desc : '',
+      desc: '',
       type: ToastType.SUCCESS,
-      varient: ToastVarient.Default,
+      variant: ToastVarient.Default,
+      extra: {
+        animation: options?.animation || 'slideIn',
+        position: options?.position || 'top',
+      },
     });
     hideToast();
   };
@@ -56,7 +65,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
         title: message,
         desc: '',
         type: ToastType.ERROR,
-        varient: ToastVarient.Default,
+        variant: ToastVarient.Default,
       });
       return;
     }
@@ -65,7 +74,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
       title: message,
       desc: '',
       type: ToastType.ERROR,
-      varient: ToastVarient.Default,
+      variant: ToastVarient.Default,
     });
     hideToast();
   };
@@ -76,7 +85,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
         title: message,
         desc: '',
         type: ToastType.INFO,
-        varient: ToastVarient.Default,
+        variant: ToastVarient.Default,
       });
       return;
     }
@@ -85,16 +94,17 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
       title: message,
       desc: '',
       type: ToastType.INFO,
-      varient: ToastVarient.Default,
+      variant: ToastVarient.Default,
+      extra: undefined,
     });
     hideToast();
   };
-  const twitter = (message: string, desc?: string) => {
+  const twitter = (message: string, desc?: string, type?: ToastType) => {
     const toastConfig = {
       isVisible: true,
       title: message,
       desc: desc ? desc : '',
-      type: ToastType.INFO,
+      type: type ?? ToastType.INFO,
       varient: ToastVarient.Twitter,
     };
     if (toastState.isVisible) {
@@ -104,12 +114,12 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
     setToastState(toastConfig);
     hideToast();
   };
-  const discord = (message: string, desc?: string) => {
+  const discord = (message: string, desc?: string, type?: ToastType) => {
     const toastConfig = {
       isVisible: true,
       title: message,
       desc: desc ? desc : '',
-      type: ToastType.INFO,
+      type: type ?? ToastType.INFO,
       varient: ToastVarient.Discord,
     };
     if (toastState.isVisible) {
@@ -120,9 +130,7 @@ export const ToastProviderInternal: React.FC<{ children: ReactNode }> = ({
     hideToast();
   };
   const hideToast = React.useCallback(() => {
-    setTimeout(() => {
-      setToastState(defaultToastState);
-    }, DefaultTimeOut);
+    setTimeout(() => setToastState(defaultToastState), DefaultTimeOut);
   }, [setToastState]);
 
   const contextValue: ToastInternalContextType = {

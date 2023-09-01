@@ -1,11 +1,12 @@
 import * as React from 'react';
 import Svg, { Path, SvgProps } from 'react-native-svg';
 const InfoIcon = (props: SvgProps) => (
-  <Svg fill="none" viewBox="0 0 25 25" width={24} height={24} {...props}>
+  <Svg viewBox="0 0 24 24" width={20} height={20} {...props}>
     <Path
-      stroke="#121923"
-      strokeWidth={1.2}
-      d="M12.5 16v-1.5m0-5.5v4m8-.5a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
+      fill={props.color || 'white'}
+      fillRule="evenodd"
+      d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10Zm-10 5.75a.75.75 0 0 0 .75-.75v-6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75ZM12 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"
+      clipRule="evenodd"
     />
   </Svg>
 );

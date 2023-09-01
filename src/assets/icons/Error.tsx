@@ -1,10 +1,18 @@
 import * as React from 'react';
-import Svg, { G, Path, SvgProps } from 'react-native-svg';
+import Svg, { Path, SvgProps } from 'react-native-svg';
 const ErrorIcon = (props: SvgProps) => (
-  <Svg fill="none" viewBox="0 0 24 24" width={24} height={24} {...props}>
-    <G stroke="#000" strokeWidth={2}>
-      <Path d="m7.952 16.048 8.125-8.125M16.091 16.034 7.91 7.85M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
-    </G>
+  <Svg
+    viewBox="0 0 512 512"
+    width={20}
+    height={20}
+    fill={props?.color}
+    {...props}
+  >
+    <Path
+      fill="#000"
+      fillRule="evenodd"
+      d="M256 42.667c117.803 0 213.333 95.53 213.333 213.333S373.803 469.333 256 469.333 42.667 373.803 42.667 256 138.197 42.667 256 42.667Zm48.917 134.25L256 225.835l-48.917-48.918-30.166 30.166L225.835 256l-48.918 48.917 30.166 30.166L256 286.165l48.917 48.918 30.166-30.166L286.165 256l48.918-48.917-30.166-30.166Z"
+    />
   </Svg>
 );
 export default React.memo(ErrorIcon);

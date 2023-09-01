@@ -40,6 +40,7 @@ export type ToastConfig = {
     infoColor: ColorValue;
     position: 'top' | 'bottom';
     animationType: 'slideIn' | 'spring';
+    progressBarColor?: ColorValue | undefined;
     icon?: {
       show?: boolean;
     } & IconProps;
@@ -65,7 +66,7 @@ type DefaultToastProps = {
   };
 };
 
-type ToastProps = {
+export type ToastProps = {
   config?: Partial<ToastConfig['config']>;
 } & (TwiterToastProps | DiscordToastProps | DefaultToastProps);
 
@@ -81,14 +82,15 @@ const Toast: React.FC<ToastProps> = (props) => {
   const toast = useToastProvider();
 
   const _ToastVarient = React.useMemo(
-    () => toast.toastState.varient,
-    [toast.toastState.varient]
+    () => toast.toastState.variant,
+    [toast.toastState.variant]
   );
 
   const toastOffSet = React.useMemo(
     () => (position === 'bottom' ? 450 : -100),
     [position]
   );
+  Logger.Warn(`TOast Offset FOR ${position} is ${toastOffSet}`);
 
   const slideIn = useRef(new Animated.Value(toastOffSet)).current;
   const scaleRef = useRef(new Animated.Value(0.1)).current;
@@ -186,29 +188,13 @@ const Toast: React.FC<ToastProps> = (props) => {
     if (!icon?.show) return null;
     switch (toast.toastState.type) {
       case ToastType.SUCCESS:
-        return (
-          icon?.successIcon ?? (
-            <SuccessIcon
-              height={icon?.height || 18}
-              width={icon?.width || 18}
-            />
-          )
-        );
+        return icon?.successIcon ?? <SuccessIcon />;
       case ToastType.ERROR:
-        return (
-          icon?.errorIcon ?? (
-            <ErrorIcon height={icon?.height || 18} width={icon?.width || 18} />
-          )
-        );
-
+        return icon?.errorIcon ?? <ErrorIcon />;
       case ToastType.INFO:
-        return (
-          icon?.infoIcon ?? (
-            <Info height={icon?.height || 18} width={icon?.width || 18} />
-          )
-        );
+        return icon?.infoIcon ?? <Info />;
       default:
-        return <Info height={icon?.height || 18} width={icon?.width || 18} />;
+        return <Info />;
     }
   }
 
@@ -223,16 +209,10 @@ const Toast: React.FC<ToastProps> = (props) => {
         </Animated.View>
       </Case>
       <Case condition={_ToastVarient === ToastVarient.Twitter}>
-        <TwitterVarient />
+        <TwitterVarient {...props} />
       </Case>
       <Case condition={_ToastVarient === ToastVarient.Discord}>
-        <DiscordVarient
-          discordToastContainerStyle={
-            props.varient === 'discord'
-              ? props.discordToastContainerStyle
-              : undefined
-          }
-        />
+        <DiscordVarient {...props} />
       </Case>
     </Switch>
   );

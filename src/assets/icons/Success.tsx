@@ -1,12 +1,15 @@
 import * as React from 'react';
-import Svg, { SvgProps, G, Path } from 'react-native-svg';
 import { memo } from 'react';
+import Svg, { Path, SvgProps } from 'react-native-svg';
 const Success = (props: SvgProps) => (
-  <Svg fill={props.color} viewBox="0 0 24 24" {...props}>
-    <G stroke="#1C274C" strokeLinecap="round" strokeWidth={1.5}>
-      <Path strokeLinejoin="round" d="m8.5 12.5 2 2 5-5" />
-      <Path d="M7 3.338A9.954 9.954 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5" />
-    </G>
+  <Svg
+    viewBox="0 0 1024 1024"
+    width={20}
+    height={20}
+    fill={props?.color}
+    {...props}
+  >
+    <Path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z" />
   </Svg>
 );
 const SuccessIcon = memo(Success);

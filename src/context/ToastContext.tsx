@@ -11,6 +11,11 @@ export enum ToastVarient {
   Twitter = 'twitter',
   Discord = 'discord',
 }
+export type ExtraOptions = {
+  position?: 'top' | 'bottom';
+  animation?: 'spring' | 'slideIn';
+};
+
 export interface ToastProps {
   isVisible: boolean;
   message: string;
@@ -21,30 +26,28 @@ type ToastState = {
   isVisible: boolean;
   title: string;
   type: ToastType;
-  desc?: string;
-  varient?: ToastVarient;
+  desc: string;
+  variant?: ToastVarient;
+  extra?: ExtraOptions;
 };
+
 interface ToastContextType {
   toastState: ToastState;
-  setToastState: React.Dispatch<
-    React.SetStateAction<{
-      isVisible: boolean;
-      title: string;
-      desc: string;
-      type: ToastType;
-      varient: ToastVarient;
-    }>
-  >;
+  setToastState: React.Dispatch<React.SetStateAction<ToastState>>;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const defaultToastState = {
+export const defaultToastState: ToastState = {
   isVisible: false,
   title: '',
   desc: '',
-  varient: ToastVarient.Default,
+  variant: ToastVarient.Default,
   type: ToastType.INFO,
+  extra: {
+    animation: 'slideIn',
+    position: 'top',
+  },
 };
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({

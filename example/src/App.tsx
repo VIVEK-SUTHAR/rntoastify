@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { Toast, ToastProvider, useToast } from 'rn-toastify';
+import { Toast, ToastProvider, ToastType, useToast } from 'rn-toastify';
 export default function App() {
   return (
     <ToastProvider>
@@ -8,6 +8,10 @@ export default function App() {
         <Toast
           config={{
             animationType: 'spring',
+            position: 'top',
+            icon: {
+              show: true,
+            },
           }}
         />
         <Example />
@@ -30,10 +34,7 @@ const Example = () => {
         <Button
           title="Show Success toast"
           onPress={() => {
-            toast.success(
-              'Hello This is sample toast',
-              'Welcome to RNN Toastify'
-            );
+            toast.success('Hello This is sample toast', { position: 'bottom' });
           }}
         />
       </View>
@@ -59,7 +60,8 @@ const Example = () => {
           onPress={() => {
             toast.twitter(
               'Hello This is Twitter Varient Toast',
-              'Here Goes Subtitle'
+              'Here Goes Subtitle',
+              ToastType.ERROR
             );
           }}
         />

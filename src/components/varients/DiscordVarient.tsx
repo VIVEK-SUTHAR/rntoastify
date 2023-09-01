@@ -6,10 +6,13 @@ import type {
   ViewStyle,
 } from 'react-native';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import ErrorIcon from '../../assets/icons/Error';
+import InfoIcon from '../../assets/icons/Info';
 import SuccessIcon from '../../assets/icons/Success';
 import { STATUSBAR_HEIGHT } from '../../constants';
-import { useToastProvider } from '../../context/ToastContext';
+import { ToastType, useToastProvider } from '../../context/ToastContext';
 import ReverseProgressBar, { ReverseProgressBarRef } from '../Progress';
+import { ToastProps } from '../Toast';
 
 export type DiscordToastProps = {
   varient?: 'discord';
@@ -19,12 +22,11 @@ export type DiscordToastProps = {
     borderRadius?: number | undefined;
     borderColor?: ColorValue | undefined;
     backgroundColor?: ColorValue | undefined;
-    progressBarColor?: ColorValue | undefined;
   };
 };
 
-const DiscordToastVarient = (props: DiscordToastProps) => {
-  const { progressBarColor } = props.discordToastContainerStyle || {};
+const DiscordToastVarient = (props: ToastProps) => {
+  const { progressBarColor, icon } = props.config || {};
   const toast = useToastProvider();
 
   const progressRef = React.useRef<ReverseProgressBarRef | null>(null);
@@ -61,13 +63,25 @@ const DiscordToastVarient = (props: DiscordToastProps) => {
       progressRef.current?.cancelAnimation();
     }
   }, [scaleRef, showToast, toast.toastState.isVisible]);
+  function getToastIcon() {
+    if (!icon?.show) return null;
+    switch (toast.toastState.type) {
+      case ToastType.SUCCESS:
+        return icon?.successIcon ?? <SuccessIcon />;
+      case ToastType.ERROR:
+        return icon?.errorIcon ?? <ErrorIcon />;
+
+      case ToastType.INFO:
+        return icon?.infoIcon ?? <InfoIcon color={'white'} />;
+      default:
+        return <InfoIcon color={'white'} />;
+    }
+  }
 
   return (
     <Animated.View style={[styles.discordToastContainer, dynamicStyleSheet]}>
       <View style={styles.contentContainer}>
-        <View style={styles.iconWrapper}>
-          <SuccessIcon height={24} width={24} color="white" strokeWidth={0} />
-        </View>
+        <View style={styles.iconWrapper}>{getToastIcon()}</View>
         <View>
           <Text style={styles.textStyle}>{toast.toastState.title}</Text>
           <Text style={styles.textStyle}>{toast.toastState.desc}</Text>
@@ -86,7 +100,7 @@ const styles = StyleSheet.create({
   discordToastContainer: {
     position: 'absolute',
     top: STATUSBAR_HEIGHT + 10,
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#36393e',
     height: 'auto',
     justifyContent: 'space-between',
     borderRadius: 4,

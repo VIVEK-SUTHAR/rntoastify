@@ -7,8 +7,11 @@ import type {
 } from 'react-native';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { DEVICE_WIDTH, STATUSBAR_HEIGHT } from '../../constants';
-import { useToastProvider } from '../../context/ToastContext';
-
+import { ToastType, useToastProvider } from '../../context/ToastContext';
+import ErrorIcon from '../../assets/icons/Error';
+import Info from '../../assets/icons/Info';
+import SuccessIcon from '../../assets/icons/Success';
+import { ToastProps } from '../Toast';
 export type TwiterToastProps = {
   varient?: 'twitter';
   twitterToastContainerStyle?: {
@@ -19,7 +22,8 @@ export type TwiterToastProps = {
     borderWidth?: number | undefined;
   };
 };
-const TwitterToastVarient = () => {
+const TwitterToastVarient = (props: ToastProps) => {
+  const { icon } = props.config || {};
   const toast = useToastProvider();
   const slideIn = useRef(new Animated.Value(-150)).current;
 
@@ -54,11 +58,24 @@ const TwitterToastVarient = () => {
       ],
     };
   }, [slideIn, toast.toastState.isVisible]);
+  function getToastIcon() {
+    if (!icon?.show) return null;
+    switch (toast.toastState.type) {
+      case ToastType.SUCCESS:
+        return icon?.successIcon ?? <SuccessIcon />;
+      case ToastType.ERROR:
+        return icon?.errorIcon ?? <ErrorIcon />;
 
+      case ToastType.INFO:
+        return icon?.infoIcon ?? <Info />;
+      default:
+        return <Info />;
+    }
+  }
   return (
     <Animated.View style={[styles.twitterToastContainer, dynamicStyleSheet]}>
       <View style={styles.twitterToastIcon}>
-        <Text style={styles.toastIconSize}>💜</Text>
+        <Text style={styles.toastIconSize}>{getToastIcon()}</Text>
       </View>
       <View style={styles.flex1}>
         <Text style={styles.twitterToastTitle}>{toast.toastState.title}</Text>
